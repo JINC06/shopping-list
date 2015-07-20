@@ -1,0 +1,76 @@
+body {
+
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+
+}
+
+#addForm {
+
+    display: none;
+
+}
+
+
+#items {
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+}
+
+
+#items {
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+}
+
+#items .row {
+
+    width: 100%;
+    padding: 5px 0;
+    border-bottom: dashed 1px #aaa;
+    float: left;
+
+}
+
+#items .row.done * {
+
+    font-style: italic;
+    text-decoration: line-through;
+
+}
+
+#items .row .columns {
+
+    float: left;
+
+}
+
+#items .itemName {
+
+    width: 80%;
+
+}
+
+#items .itemName input {
+
+    margin-bottom: 0;
+
+}
+
+#items .itemQty {
+
+    width: 10%;
+
+}
+
+#items .itemType {
+
+    width: 10%;
+
+}
