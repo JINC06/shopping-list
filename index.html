@@ -1,9 +1,10 @@
-<html>
+<!DOCTYPE html>
+<html ng-app="myApp">
 <head>
 	<meta charset="utf-8" >
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<title>My Shopping List with AngularJS</title>
-	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 	<link href="css/normalize.css" rel="stylesheet" media="screen">
     <link href="css/foundation.min.css" rel="stylesheet" media="screen">
     <link href="css/app-screen.css" rel="stylesheet" media="screen">
@@ -11,7 +12,7 @@
     <script src="js/angular.min.js"></script>
     <script src="js/shopping-list.js"></script>
 </head>
-<body>
+<body ng-controller="ShoppingListController" >
 
 <div class="row">
 
@@ -20,15 +21,15 @@
     	<h1>My Shopping List</h1>
 
 
-    	<form id="addForm" >
+    	<form id="addForm" ng-submit="insert()" >
 
 			<div class="row">
 
                 <div class="column">	
                 	
-                	<span class="spanLabel">You need at least ? characters more</span>
-                	<span class="spanLabel">Remaining characters: ?</span>
-                	<span class="spanLabel warning">? characters too many</span>
+                	<span class="spanLabel" ng-show="!minimumCharactersMet()" >You need at least {{ howManyMoreCharactersNeeded() }} characters more</span>
+                	<span class="spanLabel" ng-show="isNumberOfCharactersWithinRange()" >Remaining characters: {{ howManyCharactersRemaining() }}</span>
+                	<span class="spanLabel warning" ng-show="anyCharactersOver()" >{{ howManyCharactersOver() }} characters too many</span>
 
                 </div>
 
@@ -42,6 +43,8 @@
             		<input
                         type="text"
                         name="item"
+                        ng-model="item"
+                        ng-trim="false"
                         placeholder="Item">
 
             	</div>
@@ -51,6 +54,8 @@
             		<input
                         type="text"
                         name="qty"
+                        ng-model="qty"
+                        ng-trim="false"
                         placeholder="Qty/Weight">
 
             	</div>
@@ -58,7 +63,8 @@
             	<div class="large-2 columns">
 
             		<select
-                        name="type" >
+                        name="type"
+                        ng-model="type" >
 
                         <option value="">?</option>
 

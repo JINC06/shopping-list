@@ -2,110 +2,113 @@
 
 angular.module('myApp', [])
 
-	.constant('MAX_LENGTH', 50)
+    .constant('MAX_LENGTH', 50)
+    .constant('MIN_LENGTH', 2)
 
-	.constant('MIN_LENGTH', 2)
+    .factory('helperFactory', function() {
 
-	.factory('helperFactory', function(){
+        return {
 
-		return {
+            filterFieldArrayByDone : function(thisArray, thisField, thisValue) {
 
-			filterFieldArrayByDone: function(thisArray, thisField, thisValue){
+                var arrayToReturn = [];
 
-				var arrayToReturn = [];
+                for (var i = 0; i < thisArray.length; i++) {
 
-				for(var i = 0; i < thisArray.length; i++){
+                    if (thisArray[i].done == thisValue) {
 
-					if(thisArray[i].done == thisValue){
+                        arrayToReturn.push(thisArray[i][thisField]);
 
-						arrayToReturn.push(thisArray[i][thisField]);
+                    }
 
-					}
+                }
 
-				}
+                return arrayToReturn;
 
-				return arrayToReturn;
+            }
 
-			}
+        };
 
-		};})
+    })
 
-	.controller('ShoppingListController', function($scope, $http, $log, helperFactory, MAX_LENGTH, MIN_LENGTH){
+    .controller('ShoppingListController', function($scope, $http, $log, helperFactory, MAX_LENGTH, MIN_LENGTH) {
 
-		var urlInsert = '/mod/insert.php';
-		var urlSelect = '/mod/select.php';
-		var urlUpdate = '/mod/update.php';
-		var urlRemove = '/mod/remove.php';
+        var urlInsert = '/mod/insert.php';
+        var urlSelect = '/mod/select.php';
+        var urlUpdate = '/mod/update.php';
+        var urlRemove = '/mod/remove.php';
 
-		$scope.types = [];
-		$scope.items = [];
+        $scope.types = [];
+        $scope.items = [];
 
-		$scope.item = '';
-		$scope.qty = '';
-		$scope.types = '';
-
-		$scope.howManyCharactersNeeded = function(){
-			// onion  2 - 5    -3
-			var characters = (MIN_LENGTH - $scope.item.length);
-			
-			return (characters > 0) ? characters : 0;
-
-		};
-
-		$scope.howManyCharactersRemaining = function() {
-
-			var characters = (MAX_LENGTH - $scope.item.length);
-
-			return (characters > 0) ? characters : 0;
-
-		};
+        $scope.item = '';
+        $scope.qty = '';
+        $scope.types = '';
 
 
-		$scope.howManyCharactersOver = function(){
+        $scope.howManyMoreCharactersNeeded = function() {
 
-			var characters = (MAX_LENGTH - $scope.item.length);
+            var characters = (MIN_LENGTH - $scope.item.length);
 
-			return (characters < 0) ? Math.abs(characters) : 0;
+            return (characters > 0) ? characters : 0;
 
-		};
+        };
 
-		$scope.mininumCharactersMet = function() {
+        $scope.howManyCharactersRemaining = function() {
 
-			return ($scope.howManyCharactersNeeded() == 0);
+            var characters = (MAX_LENGTH - $scope.item.length);
 
-		};
+            return (characters > 0) ? characters : 0;
 
-		$scope.anyCharactersOver = function() {
+        };
 
-			return ($scope.howManyCharactersOver() > 0);
 
-		};
+        $scope.howManyCharactersOver = function() {
 
-		$scope.isNumberOfCharactersWithinRange = function() {
+            var characters = (MAX_LENGTH - $scope.item.length);
 
-			return (
-				$scope.mininumCharactersMet() &&
-				!$scope.anyCharactersOver()
-			);
+            return (characters < 0) ? Math.abs(characters) : 0;
 
-		};
+        };
 
-		$scope.goodToGo = function() {
+        $scope.minimumCharactersMet = function() {
 
-			return (
-				$scope.isNumberOfCharactersWithinRange() &&
-				$scope.qty > 0 &&
-				$scope.type > 0
-			);
+            return ($scope.howManyMoreCharactersNeeded() == 0);
 
-		};
+        };
 
-		$scope.clear = function() {
+        $scope.anyCharactersOver = function() {
+
+            return ($scope.howManyCharactersOver() > 0);
+
+        };
+
+        $scope.isNumberOfCharactersWithinRange = function() {
+
+            return (
+                $scope.minimumCharactersMet() &&
+                !$scope.anyCharactersOver()
+            );
+
+        };
+
+        $scope.goodToGo = function() {
+
+            return (
+                $scope.isNumberOfCharactersWithinRange() &&
+                $scope.qty > 0 &&
+                $scope.type > 0
+            );
+
+        };
+
+        $scope.clear = function() {
 
             $scope.item = '';
             $scope.qty = '';
 
         };
+
 
         function _recordAddedSuccessfully(data) {
 
@@ -117,15 +120,16 @@ angular.module('myApp', [])
 
         }
 
+
         $scope.insert = function() {
 
-        	if ($scope.goodToGo()) {
+            if ($scope.goodToGo()) {
 
-        		var thisData = "item=" + $scope.item;
+                var thisData = "item=" + $scope.item;
                 thisData += "&qty=" + $scope.qty;
                 thisData += "&type=" + $scope.type;
 
-        		$http({
+                $http({
 
                     method : 'POST',
                     url : urlInsert,
@@ -159,9 +163,10 @@ angular.module('myApp', [])
 
                     });
 
-        	}
+            }
 
         };
+
 
 
         $scope.select = function() {
@@ -197,6 +202,90 @@ angular.module('myApp', [])
 
 
 
+        $scope.update = function(item) {
+
+            var thisData = "id=" + item.id;
+            thisData += "&done=" + item.done;
+
+            $http({
+
+                method: 'POST',
+                url: urlUpdate,
+                data: thisData,
+                headers: {'Content-type' : 'application/x-www-form-urlencoded'}
+
+            })
+                .success(function(data) {
+
+                    $log.info(data);
+
+                })
+                .error(function(data, status, headers, config) {
+
+                    throw new Error('Something went wrong with updating record');
+
+                });
 
 
-	});
+        };
+
+
+
+        function _recordRemovedSuccessfully(data) {
+
+            return (
+                data &&
+                !data.error
+            );
+
+        }
+
+
+
+        $scope.remove = function() {
+
+            var removeIds = helperFactory.filterFieldArrayByDone($scope.items, 'id', 1);
+
+            if (removeIds.length > 0) {
+
+                $http({
+
+                    method: 'POST',
+                    url: urlRemove,
+                    data: "ids=" + removeIds.join('|'),
+                    headers: {'Content-type' : 'application/x-www-form-urlencoded'}
+
+                })
+                    .success(function(data) {
+
+                        if (_recordRemovedSuccessfully(data)) {
+
+                            $scope.items = $scope.items.filter(function(item) {
+
+                                return item.done == 0;
+
+                            });
+
+                        }
+
+                    })
+                    .error(function(data, status, headers, config) {
+
+                        throw new Error('Something went wrong with updating record');
+
+                    });
+
+            }
+
+        };
+
+
+        $scope.print = function() {
+
+            window.print();
+
+        };
+
+
+
+    });
