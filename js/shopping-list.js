@@ -33,10 +33,10 @@ angular.module('myApp', [])
 
     .controller('ShoppingListController', function($scope, $http, $log, helperFactory, MAX_LENGTH, MIN_LENGTH) {
 
-        var urlInsert = '/mod/insert.php';
-        var urlSelect = '/mod/select.php';
-        var urlUpdate = '/mod/update.php';
-        var urlRemove = '/mod/remove.php';
+        var urlInsert = 'mod/insert.php';
+        var urlSelect = 'mod/select.php';
+        var urlUpdate = 'mod/update.php';
+        var urlRemove = 'mod/remove.php';
 
         $scope.types = [];
         $scope.items = [];
